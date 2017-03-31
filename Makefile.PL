@@ -62,6 +62,7 @@ my %requires = (
     'URI'                      => '1.55',
     'version'                  => '0.87',
     'Taint::Util'              => 0,
+    'HTML::Escape'             => 0,
 );
 my %build_requires = (
     'ExtUtils::MakeMaker' => '6.57_07',
