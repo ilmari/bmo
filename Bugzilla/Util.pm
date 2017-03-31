@@ -43,14 +43,9 @@ use Text::Wrap;
 use Encode qw(encode decode resolve_alias);
 use Encode::Guess;
 use POSIX qw(floor ceil);
+use Taint::Util ();
 
-sub trick_taint {
-    require Carp;
-    Carp::confess("Undef to trick_taint") unless defined $_[0];
-    my $match = $_[0] =~ /^(.*)$/s;
-    $_[0] = $match ? $1 : undef;
-    return (defined($_[0]));
-}
+*trick_taint = \&Taint::Util::untaint;
 
 sub detaint_natural {
     my $match = $_[0] =~ /^(\d+)$/;
