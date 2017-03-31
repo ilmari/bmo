@@ -1456,17 +1456,13 @@ sub get_selectable_products {
     my $class_restricted = Bugzilla->params->{'useclassification'} && $class_id;
 
     if (!defined $self->{selectable_products}) {
-        my $query = "SELECT id " .
-                    "  FROM products " .
-                 "LEFT JOIN group_control_map " .
+        my $query = "LEFT JOIN group_control_map " .
                         "ON group_control_map.product_id = products.id " .
                       " AND group_control_map.membercontrol = " . CONTROLMAPMANDATORY .
                       " AND group_id NOT IN(" . $self->groups_as_string . ") " .
-                  "   WHERE group_id IS NULL " .
-                  "ORDER BY name";
+                  "   WHERE group_id IS NULL ";
 
-        my $prod_ids = Bugzilla->dbh->selectcol_arrayref($query);
-        $self->{selectable_products} = Bugzilla::Product->new_from_list($prod_ids);
+        $self->{selectable_products} = Bugzilla::Product->new_from_where(\$query);
     }
 
     # Restrict the list of products to those being in the classification, if any.

@@ -551,11 +551,11 @@ sub get_attachments_by_bug {
         $and_restriction .= ' AND (isobsolete = 0)';
     }
 
-    my $attach_ids = $dbh->selectcol_arrayref("SELECT attach_id FROM attachments
-                                               WHERE bug_id = ? $and_restriction",
-                                               undef, @values);
-
-    my $attachments = Bugzilla::Attachment->new_from_list($attach_ids);
+    my $attachments = Bugzilla::Attachment->new_from_where(
+        qq{ bug_id = ? $and_restriction },
+        @values
+    );
+    my $attach_ids = [ map { $_->id } @$attachments ];
 
     # To avoid $attachment->flags to run SQL queries itself for each
     # attachment listed here, we collect all the data at once and

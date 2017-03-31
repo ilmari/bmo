@@ -206,6 +206,12 @@ sub new_from_hash {
     return $object_data;
 }
 
+sub new_from_where {
+    my ($invocant, $where, @values) = @_;
+
+    return $invocant->_do_list_select($where, \@values);
+}
+
 sub initialize {
     # abstract
 }
@@ -413,7 +419,11 @@ sub _do_list_select {
     if (!$objects) {
         my $sql = "SELECT $cols FROM $table";
         if (defined $where) {
-            $sql .= " WHERE $where ";
+            if (ref $where && ref($where) eq 'SCALAR') {
+                $sql .= " $$where";
+            } else {
+                $sql .= " WHERE $where ";
+            }
         }
         $sql .= " ORDER BY $order";
         $sql .= " $postamble" if $postamble;

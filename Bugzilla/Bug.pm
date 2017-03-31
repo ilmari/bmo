@@ -3866,11 +3866,7 @@ sub see_also {
     my ($self) = @_;
     return [] if $self->{'error'};
     if (!exists $self->{see_also}) {
-        my $ids = Bugzilla->dbh->selectcol_arrayref(
-            'SELECT id FROM bug_see_also WHERE bug_id = ?',
-            undef, $self->id);
-
-        my $bug_urls = Bugzilla::BugUrl->new_from_list($ids);
+        my $bug_urls = Bugzilla::BugUrl->new_from_where("bug_id = ?", $self->id);
 
         $self->{see_also} = $bug_urls;
     }
