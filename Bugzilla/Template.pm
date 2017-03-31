@@ -679,6 +679,7 @@ sub create {
     # make them in t/004.template.t also, if required.
 
     my $config = {
+        EVAL_PERL => 1,
         # Colon-separated list of directories containing templates.
         INCLUDE_PATH => $opts{'include_path'} 
                         || _include_path($opts{'language'}),

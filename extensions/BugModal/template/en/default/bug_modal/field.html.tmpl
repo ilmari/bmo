@@ -38,8 +38,7 @@
 
 [%
 IF field_type.defined && !field;
-  RETURN;
-END;
+ELSE;
 IF !name.defined;
   name = field.name;
 END;
@@ -353,4 +352,5 @@ END;
     <input type="text" id="[% name FILTER html %]" name="[% name FILTER html %]"
            value="[% values.pluck('id').join(", ") FILTER html %]" [% aria_labelledby_html FILTER none %]>
   [% END %]
+[% END %]
 [% END %]
