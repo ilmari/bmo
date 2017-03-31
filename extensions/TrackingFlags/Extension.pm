@@ -76,7 +76,7 @@ sub template_before_process {
 
     if ($file eq 'bug/create/create.html.tmpl') {
         my $flags = Bugzilla::Extension::TrackingFlags::Flag->match({
-            product   => $vars->{'product'}->name,
+            product   => $vars->{'product'},
             enter_bug => 1,
             is_active => 1,
         });
@@ -95,10 +95,10 @@ sub template_before_process {
 
         if ($bug && !$bug->{error}) {
             my $flags = Bugzilla::Extension::TrackingFlags::Flag->match({
-                product     => $bug->product,
-                component   => $bug->component,
-                bug_id      => $bug->id,
-                is_active   => 1,
+                product_id   => $bug->product_id,
+                component_id => $bug->component_id,
+                bug_id       => $bug->id,
+                is_active    => 1,
             });
 
             $vars->{tracking_flags}      = $flags;
@@ -109,7 +109,7 @@ sub template_before_process {
     }
     elsif ($file eq 'list/edit-multiple.html.tmpl' && $vars->{'one_product'}) {
         $vars->{'tracking_flags'} = Bugzilla::Extension::TrackingFlags::Flag->match({
-            product   => $vars->{'one_product'}->name,
+            product   => $vars->{'one_product'},
             is_active => 1
         });
     }
