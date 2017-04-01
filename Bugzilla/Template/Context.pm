@@ -104,10 +104,4 @@ sub filter {
     $self->SUPER::filter($name, $args, $args ? undef : $name);
 }
 
-# We need a DESTROY sub for the same reason that Bugzilla::CGI does.
-sub DESTROY {
-    my $self = shift;
-    $self->SUPER::DESTROY(@_);
-};
-
 1;
