@@ -16,6 +16,7 @@ use base qw(Template::Context);
 
 use Bugzilla::Hook;
 use Scalar::Util qw(blessed);
+use List::MoreUtils qw(any);
 
 sub process {
     my $self = shift;
@@ -71,8 +72,8 @@ sub stash {
     # Checking Bugzilla::Hook::in prevents infinite recursion on this hook.
 
     if (    $self->{bz_in_process}
-        and $name =~ /\./
-        and !grep( $_ eq $name, @$pre_process )
+        and index($name, ".") >= -1
+        and !(any { $_ eq $name } @$pre_process)
         and !Bugzilla::Hook::in('template_before_process') )
     {
         state $WANT = Bugzilla::Hook::collect_wants('template_before_process_wants');
