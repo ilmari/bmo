@@ -78,13 +78,13 @@ use constant UPDATE_VALIDATORS => {
 sub new {
     my $class = shift;
     my $param = shift;
-    my $cache = Bugzilla->request_cache;
+    state $request_cache = Bugzilla->request_cache;
 
     if (!ref $param
-        && exists $cache->{'tracking_flags'}
-        && exists $cache->{'tracking_flags'}->{$param})
+        && exists $request_cache->{'tracking_flags'}
+        && exists $request_cache->{'tracking_flags'}->{$param})
     {
-        return $cache->{'tracking_flags'}->{$param};
+        return $request_cache->{'tracking_flags'}->{$param};
     }
 
     return $class->SUPER::new($param);
@@ -92,7 +92,8 @@ sub new {
 
 sub new_from_hash {
     my $class = shift;
-    my $cache = Bugzilla->request_cache->{'tracking_flags'} //= {};
+    state $request_cache = Bugzilla->request_cache;
+    $request_cache->{'tracking_flags'} //= {};
     my $flag = $class->SUPER::new_from_hash(@_);
     if ($flag) {
         push @Bugzilla::Extension::TrackingFlags::FLAG_CACHE, $flag;
@@ -173,9 +174,9 @@ sub update {
              $self->name, $self->description, $old_self->name);
 
     # Update request_cache
-    my $cache = Bugzilla->request_cache;
-    if (exists $cache->{'tracking_flags'}) {
-        $cache->{'tracking_flags'}->{$self->flag_id} = $self;
+    state $request_cache = Bugzilla->request_cache;
+    if (exists $request_cache->{'tracking_flags'}) {
+        $request_cache->{'tracking_flags'}->{$self->flag_id} = $self;
     }
 
     # fielddefs has been changed so we need to clear global config
@@ -222,26 +223,26 @@ sub match {
 
 sub get_all {
     my $self = shift;
-    my $cache = Bugzilla->request_cache;
-    if (!exists $cache->{'tracking_flags'}) {
+    state $request_cache = Bugzilla->request_cache;
+    if (!exists $request_cache->{'tracking_flags'}) {
         my @tracking_flags = $self->SUPER::get_all(@_);
         preload_all_the_things(\@tracking_flags);
         my %tracking_flags_hash = map { $_->flag_id => $_ } @tracking_flags;
-        $cache->{'tracking_flags'} = \%tracking_flags_hash;
+        $request_cache->{'tracking_flags'} = \%tracking_flags_hash;
     }
     return sort { $a->flag_type cmp $b->flag_type || $a->sortkey <=> $b->sortkey }
-           values %{ $cache->{'tracking_flags'} };
+           values %{ $request_cache->{'tracking_flags'} };
 }
 
 # avoids the overhead of pre-loading if just the field names are required
 sub get_all_names {
     my $self = shift;
-    my $cache = Bugzilla->request_cache;
-    if (!exists $cache->{'tracking_flags_names'}) {
-        $cache->{'tracking_flags_names'} =
+    state $request_cache = Bugzilla->request_cache;
+    if (!exists $request_cache->{'tracking_flags_names'}) {
+        $request_cache->{'tracking_flags_names'} =
             Bugzilla->dbh->selectcol_arrayref("SELECT name FROM tracking_flags ORDER BY name");
     }
-    return @{ $cache->{'tracking_flags_names'} };
+    return @{ $request_cache->{'tracking_flags_names'} };
 }
 
 sub remove_from_db {
@@ -266,9 +267,9 @@ sub remove_from_db {
         $dbh->bz_commit_transaction();
 
         # Remove from request cache
-        my $cache = Bugzilla->request_cache;
-        if (exists $cache->{'tracking_flags'}) {
-            delete $cache->{'tracking_flags'}->{$self->flag_id};
+        state $request_cache = Bugzilla->request_cache;
+        if (exists $request_cache->{'tracking_flags'}) {
+            delete $request_cache->{'tracking_flags'}->{$self->flag_id};
         }
     };
     my $error = "$@";
