@@ -50,10 +50,10 @@ use constant FORMAT_2_SIZE => [19,55];
 my %SHARED_PROVIDERS;
 
 # Pseudo-constant.
-sub SAFE_URL_REGEXP {
-    my $safe_protocols = join('|', SAFE_PROTOCOLS);
-    return qr/($safe_protocols):[^:\s<>\"][^\s<>\"]+[\w\/]/i;
-}
+use constant SAFE_URL_REGEXP => do {
+    my $safe_protocols = join('|', sort { length $b <=> length $a || $a cmp $b } SAFE_PROTOCOLS);
+    qr/($safe_protocols):[^:\s<>\"][^\s<>\"]+[\w\/]/i;
+};
 
 # Convert the constants in the Bugzilla::Constants module into a hash we can
 # pass to the template object for reflection into its "constants" namespace
@@ -680,6 +680,7 @@ sub create {
 
     # IMPORTANT - If you make any FILTER changes here, make sure to
     # make them in t/004.template.t also, if required.
+    state $constants = _load_constants();
 
     my $config = {
         EVAL_PERL => 1,
@@ -980,7 +981,7 @@ sub create {
         VARIABLES => {
             # Some of these are not really constants, and doing this messes up preloading.
             # they are now fake constants.
-            constants => _load_constants(),
+            constants => $constants,
 
             # Function for retrieving global parameters.
             'Param' => sub { return Bugzilla->params->{$_[0]}; },
