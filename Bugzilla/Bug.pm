@@ -4783,8 +4783,8 @@ sub _create_cf_accessors {
     my $class = ref($invocant) || $invocant;
     return if Bugzilla->request_cache->{"${class}_cf_accessors_created"};
 
-    my $fields = Bugzilla->fields({ custom => 1 });
-    foreach my $field (@$fields) {
+    my $fields = Bugzilla->fields({ custom => 1, by_name => 1 });
+    foreach my $field (values %$fields) {
         next if $field->type == FIELD_TYPE_EXTENSION;
         my $accessor = $class->_accessor_for($field);
         my $name = "${class}::" . $field->name;
