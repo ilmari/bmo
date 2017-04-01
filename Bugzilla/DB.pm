@@ -1369,7 +1369,12 @@ sub _bz_init_schema_storage {
 
 sub _bz_real_schema {
     my ($self) = @_;
+    state $real_schema;
     return $self->{private_real_schema} if exists $self->{private_real_schema};
+
+    if ($real_schema) {
+        return $self->{private_real_schema} = $real_schema;
+    }
 
     my $bz_schema;
     unless ($bz_schema = Bugzilla->memcached->get({ key => 'bz_schema' })) {
@@ -1382,7 +1387,7 @@ sub _bz_real_schema {
     (die "_bz_real_schema tried to read the bz_schema table but it's empty!")
         if !$bz_schema;
 
-    $self->{private_real_schema} =
+    $real_schema = $self->{private_real_schema} =
         $self->_bz_schema->deserialize_abstract($bz_schema->[0], $bz_schema->[1]);
 
     return $self->{private_real_schema};

@@ -81,6 +81,8 @@ Bugzilla->preload_features();
 
 # force template shared provider to load
 Bugzilla->template;
+# force the schema blob to load.
+Bugzilla->dbh->disconnect();
 
 # Have ModPerl::RegistryLoader pre-compile all CGI scripts.
 my $rl = new ModPerl::RegistryLoader();
