@@ -113,6 +113,22 @@ use constant UPDATE_VALIDATORS => {
 ####      Accessors      ######
 ###############################
 
+use Class::XSAccessor (
+    getters => {
+        id                => __PACKAGE__->ID_FIELD,
+        bug_id            => 'bug_id',
+        description       => 'description',
+        contenttype       => 'mimetype',
+        attached          => 'creation_ts',
+        modification_time => 'modification_time',
+        filename          => 'filename',
+        ispatch           => 'ispatch',
+        isobsolete        => 'isobsolete',
+        isprivate         => 'isprivate',
+        datasize          => 'attach_size',
+    }
+);
+
 =pod
 
 =head2 Instance Properties
@@ -124,12 +140,6 @@ use constant UPDATE_VALIDATORS => {
 the ID of the bug to which the attachment is attached
 
 =back
-
-=cut
-
-sub bug_id {
-    return $_[0]->{bug_id};
-}
 
 =over
 
@@ -158,12 +168,6 @@ user-provided text describing the attachment
 
 =back
 
-=cut
-
-sub description {
-    return $_[0]->{description};
-}
-
 =over
 
 =item C<contenttype>
@@ -171,12 +175,6 @@ sub description {
 the attachment's MIME media type
 
 =back
-
-=cut
-
-sub contenttype {
-    return $_[0]->{mimetype};
-}
 
 =over
 
@@ -201,12 +199,6 @@ the date and time on which the attacher attached the attachment
 
 =back
 
-=cut
-
-sub attached {
-    return $_[0]->{creation_ts};
-}
-
 =over
 
 =item C<modification_time>
@@ -214,12 +206,6 @@ sub attached {
 the date and time on which the attachment was last modified.
 
 =back
-
-=cut
-
-sub modification_time {
-    return $_[0]->{modification_time};
-}
 
 =over
 
@@ -229,12 +215,6 @@ the name of the file the attacher attached
 
 =back
 
-=cut
-
-sub filename {
-    return $_[0]->{filename};
-}
-
 =over
 
 =item C<ispatch>
@@ -242,12 +222,6 @@ sub filename {
 whether or not the attachment is a patch
 
 =back
-
-=cut
-
-sub ispatch {
-    return $_[0]->{ispatch};
-}
 
 =over
 
@@ -257,12 +231,6 @@ whether or not the attachment is obsolete
 
 =back
 
-=cut
-
-sub isobsolete {
-    return $_[0]->{isobsolete};
-}
-
 =over
 
 =item C<isprivate>
@@ -270,12 +238,6 @@ sub isobsolete {
 whether or not the attachment is private
 
 =back
-
-=cut
-
-sub isprivate {
-    return $_[0]->{isprivate};
-}
 
 =over
 
@@ -332,12 +294,6 @@ sub data {
 the length (in bytes) of the attachment content
 
 =back
-
-=cut
-
-sub datasize {
-    return $_[0]->{attach_size};
-}
 
 =over
 

@@ -110,13 +110,9 @@ sub set_comment         { $_[0]->set('comment', $_[1]);         }
 ###############################
 ####      Accessors        ####
 ###############################
-
-sub tracking_flag_id { return $_[0]->{'tracking_flag_id'}; }
-sub setter_group_id  { return $_[0]->{'setter_group_id'};  }
-sub value            { return $_[0]->{'value'};            }
-sub sortkey          { return $_[0]->{'sortkey'};          }
-sub is_active        { return $_[0]->{'is_active'};        }
-sub comment          { return $_[0]->{'comment'};          }
+use Class::XSAccessor (
+    getters => [qw[ tracking_flag_id setter_group_id value sortkey is_active comment]],
+);
 
 sub tracking_flag {
     return $_[0]->{'tracking_flag'} if $_[0]->{'tracking_flag'};

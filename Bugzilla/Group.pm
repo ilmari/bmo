@@ -71,12 +71,18 @@ use constant GROUP_PARAMS => qw(chartgroup insidergroup timetrackinggroup
 ####      Accessors      ######
 ###############################
 
-sub description  { return $_[0]->{'description'};  }
-sub is_bug_group { return $_[0]->{'isbuggroup'};   }
-sub user_regexp  { return $_[0]->{'userregexp'};   }
-sub is_active    { return $_[0]->{'isactive'};     }
-sub icon_url     { return $_[0]->{'icon_url'};     }
-sub idle_member_removal { return $_[0]->{'idle_member_removal'}; }
+use Class::XSAccessor (
+    getters => {
+        id                  => __PACKAGE__->ID_FIELD,
+        name                => __PACKAGE__->NAME_FIELD,
+        description         => 'description',
+        is_bug_group        => 'isbuggroup',
+        user_regexp         => 'userregexp',
+        is_active           => 'isactive',
+        icon_url            => 'icon_url',
+        idle_member_removal => 'idle_member_removal',
+    }
+);
 
 sub bugs {
     my $self = shift;

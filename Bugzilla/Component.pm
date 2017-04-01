@@ -434,9 +434,15 @@ sub product {
 ####      Accessors        ####
 ###############################
 
-sub description { return $_[0]->{'description'}; }
-sub product_id  { return $_[0]->{'product_id'};  }
-sub is_active   { return $_[0]->{'isactive'};    }
+use Class::XSAccessor (
+    getters => {
+        id          => __PACKAGE__->ID_FIELD,
+        name        => __PACKAGE__->NAME_FIELD,
+        description => 'description',
+        product_id  => 'product_id',
+        is_active   => 'isactive',
+    }
+);
 
 ##############################################
 # Implement Bugzilla::Field::ChoiceInterface #

@@ -3426,31 +3426,37 @@ sub tags {
 # These are accessors that don't need to access the database.
 # Keep them in alphabetical order.
 
-sub alias               { return $_[0]->{alias}               }
-sub bug_file_loc        { return $_[0]->{bug_file_loc}        }
-sub bug_id              { return $_[0]->{bug_id}              }
-sub bug_severity        { return $_[0]->{bug_severity}        }
-sub bug_status          { return $_[0]->{bug_status}          }
-sub cclist_accessible   { return $_[0]->{cclist_accessible}   }
-sub component_id        { return $_[0]->{component_id}        }
-sub creation_ts         { return $_[0]->{creation_ts}         }
-sub estimated_time      { return $_[0]->{estimated_time}      }
-sub deadline            { return $_[0]->{deadline}            }
-sub delta_ts            { return $_[0]->{delta_ts}            }
-sub error               { return $_[0]->{error}               }
-sub everconfirmed       { return $_[0]->{everconfirmed}       }
-sub lastdiffed          { return $_[0]->{lastdiffed}          }
-sub op_sys              { return $_[0]->{op_sys}              }
-sub priority            { return $_[0]->{priority}            }
-sub product_id          { return $_[0]->{product_id}          }
-sub remaining_time      { return $_[0]->{remaining_time}      }
-sub reporter_accessible { return $_[0]->{reporter_accessible} }
-sub rep_platform        { return $_[0]->{rep_platform}        }
-sub resolution          { return $_[0]->{resolution}          }
-sub short_desc          { return $_[0]->{short_desc}          }
-sub status_whiteboard   { return $_[0]->{status_whiteboard}   }
-sub target_milestone    { return $_[0]->{target_milestone}    }
-sub version             { return $_[0]->{version}             }
+use Class::XSAccessor (
+    getters => {
+        id                  => __PACKAGE__->ID_FIELD,
+        name                => __PACKAGE__->NAME_FIELD,
+        alias               => 'alias',
+        bug_file_loc        => 'bug_file_loc',
+        bug_id              => 'bug_id',
+        bug_severity        => 'bug_severity',
+        bug_status          => 'bug_status',
+        cclist_accessible   => 'cclist_accessible',
+        component_id        => 'component_id',
+        creation_ts         => 'creation_ts',
+        estimated_time      => 'estimated_time',
+        deadline            => 'deadline',
+        delta_ts            => 'delta_ts',
+        error               => 'error',
+        everconfirmed       => 'everconfirmed',
+        lastdiffed          => 'lastdiffed',
+        op_sys              => 'op_sys',
+        priority            => 'priority',
+        product_id          => 'product_id',
+        remaining_time      => 'remaining_time',
+        reporter_accessible => 'reporter_accessible',
+        rep_platform        => 'rep_platform',
+        resolution          => 'resolution',
+        short_desc          => 'short_desc',
+        status_whiteboard   => 'status_whiteboard',
+        target_milestone    => 'target_milestone',
+        version             => 'version',
+    }
+);
 
 #####################################################################
 # Complex Accessors

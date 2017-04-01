@@ -25,7 +25,11 @@ sub new {
     return bless { _CONTEXT => $context }, $class;
 }
 
-sub _context { return $_[0]->{_CONTEXT} }
+use Class::XSAccessor (
+    getters => {
+        _context => '_CONTEXT',
+    }
+);
 
 sub process {
     my ($self, $hook_name, $template) = @_;

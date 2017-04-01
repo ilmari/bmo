@@ -118,6 +118,13 @@ use constant VALIDATORS => {
     is_numeric   => \&_check_is_numeric,
 };
 
+use Class::XSAccessor (
+    getters => {
+        id => __PACKAGE__->ID_FIELD,
+        name => __PACKAGE__->NAME_FIELD,
+    }
+);
+
 use constant VALIDATOR_DEPENDENCIES => {
     is_numeric => ['type'],
     name => ['custom'],

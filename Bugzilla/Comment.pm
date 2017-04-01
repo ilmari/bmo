@@ -228,18 +228,25 @@ sub preload {
 ####      Accessors      ######
 ###############################
 
-sub already_wrapped { return $_[0]->{'already_wrapped'}; }
-sub body        { return $_[0]->{'thetext'};   }
-sub bug_id      { return $_[0]->{'bug_id'};    }
-sub creation_ts { return $_[0]->{'bug_when'};  }
-sub is_private  { return $_[0]->{'isprivate'}; }
+use Class::XSAccessor (
+    getters => {
+        id              => __PACKAGE__->ID_FIELD,
+        name            => __PACKAGE__->NAME_FIELD,
+        already_wrapped => 'already_wrapped',
+        body            => 'thetext',
+        bug_id          => 'bug_id',
+        creation_ts     => 'bug_when',
+        is_private      => 'isprivate',
+        type            => 'type',
+        extra_data      => 'extra_data',
+    }
+);
+
 sub work_time   {
     # Work time is returned as a string (see bug 607909)
     return 0 if $_[0]->{'work_time'} + 0 == 0;
     return $_[0]->{'work_time'};
 }
-sub type        { return $_[0]->{'type'};      }
-sub extra_data  { return $_[0]->{'extra_data'} }
 
 sub tags {
     my ($self) = @_;

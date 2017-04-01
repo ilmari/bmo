@@ -376,13 +376,17 @@ sub set_is_active   { $_[0]->set('is_active', $_[1]);   }
 ####      Accessors        ####
 ###############################
 
-sub flag_id     { return $_[0]->{'id'};          }
-sub name        { return $_[0]->{'name'};        }
-sub description { return $_[0]->{'description'}; }
-sub flag_type   { return $_[0]->{'type'};        }
-sub sortkey     { return $_[0]->{'sortkey'};     }
-sub enter_bug   { return $_[0]->{'enter_bug'};   }
-sub is_active   { return $_[0]->{'is_active'};   }
+use Class::XSAccessor (
+    getters => {
+        flag_id     => 'id',
+        name        => 'name',
+        description => 'description',
+        flag_type   => 'type',
+        sortkey     => 'sortkey',
+        enter_bug   => 'enter_bug',
+        is_active   => 'is_active',
+    }
+);
 
 sub values {
     return $_[0]->{'values'} ||= Bugzilla::Extension::TrackingFlags::Flag::Value->match({

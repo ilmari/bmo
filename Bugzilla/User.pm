@@ -87,6 +87,12 @@ use constant NAME_FIELD => 'login_name';
 use constant ID_FIELD   => 'userid';
 use constant LIST_ORDER => NAME_FIELD;
 
+use Class::XSAccessor (
+    getters => {
+        id => ID_FIELD,
+    }
+);
+
 use constant VALIDATORS => {
     cryptpassword            => \&_check_password,
     disable_mail             => \&_check_disable_mail,
