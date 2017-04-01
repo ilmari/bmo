@@ -24,6 +24,8 @@ use Scalar::Util qw(blessed weaken);
 
 use constant DB_TABLE => 'tracking_flags_values';
 
+use constant IS_CONFIG => 1;
+
 use constant DB_COLUMNS => qw(
     id
     tracking_flag_id

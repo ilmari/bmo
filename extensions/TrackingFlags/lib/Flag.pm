@@ -29,6 +29,8 @@ use Bugzilla::Extension::TrackingFlags::Flag::Visibility;
 
 use constant DB_TABLE => 'tracking_flags';
 
+use constant IS_CONFIG => 1;
+
 use constant DB_COLUMNS => qw(
     id
     field_id
@@ -284,7 +286,7 @@ sub preload_all_the_things {
 
     # Preload values
     my $value_objects
-        = Bugzilla::Extension::TrackingFlags::Flag::Value->match({ tracking_flag_id => \@flag_ids });
+        = [Bugzilla::Extension::TrackingFlags::Flag::Value->get_all];
 
     # Now populate the tracking flags with this set of value objects.
     foreach my $obj (@$value_objects) {
