@@ -284,7 +284,7 @@ sub object_cache_clearall {
 # hashref.
 sub _serialisation_keys {
     my ($class, $object) = @_;
-    my $cache = Bugzilla->request_cache->{serialisation_keys} ||= {};
+    state $cache = {};
     $cache->{$class} = [ keys %$object ] if $object && !exists $cache->{$class};
     return @{ $cache->{$class} };
 }
