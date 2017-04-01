@@ -658,6 +658,7 @@ sub process {
     my $self = shift;
     # All of this current_langs stuff allows template_inner to correctly
     # determine what-language Template object it should instantiate.
+    local $SIG{__DIE__} = undef;
     my $current_langs = Bugzilla->request_cache->{template_current_lang} ||= [];
     unshift(@$current_langs, $self->context->{bz_language});
     local $is_processing = 1;
@@ -674,6 +675,8 @@ sub process {
 sub create {
     my $class = shift;
     my %opts = @_;
+
+    local $SIG{__DIE__} = undef;
 
     # IMPORTANT - If you make any FILTER changes here, make sure to
     # make them in t/004.template.t also, if required.
