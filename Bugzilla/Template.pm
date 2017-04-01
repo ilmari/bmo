@@ -13,6 +13,7 @@ use strict;
 use warnings;
 
 use Bugzilla::Template::Provider;
+use Bugzilla::Template::Directive;
 use Bugzilla::Bug;
 use Bugzilla::Constants;
 use Bugzilla::Hook;
@@ -683,6 +684,7 @@ sub create {
     state $constants = _load_constants();
 
     my $config = {
+        FACTORY => 'Bugzilla::Template::Directive',
         EVAL_PERL => 1,
         # Colon-separated list of directories containing templates.
         INCLUDE_PATH => $opts{'include_path'} 
