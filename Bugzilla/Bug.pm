@@ -4543,6 +4543,7 @@ sub check_can_change_field {
     my $self = shift;
     my ($field, $oldvalue, $newvalue, $PrivilegesRequired) = (@_);
     my $user = Bugzilla->user;
+    return 0 if $user->id == 0;
 
     $oldvalue = defined($oldvalue) ? $oldvalue : '';
     $newvalue = defined($newvalue) ? $newvalue : '';
