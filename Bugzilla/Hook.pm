@@ -77,7 +77,7 @@ sub template_process {
 
     # Get the hooks out of the cache if they exist. Otherwise, read them
     # from the disk.
-    my $cache = Bugzilla->request_cache->{template_plugin_hook_cache} ||= {};
+    state $cache = {};
     my $lang = $context->{bz_language} || '';
     $cache->{"${lang}__$extension_template"} 
         ||= _get_hooks($context, $extension_template);
