@@ -762,15 +762,20 @@ sub create {
             # Returns the text with backslashes, single/double quotes,
             # and newlines/carriage returns escaped for use in JS strings.
             js => sub {
+                state $chars = {
+                    q[\\]        => q[\\\\],
+                    q[']         => q[\\'],
+                    q["]         => q[\\"],
+                    qq[\n]       => q{\\n},
+                    qq[\r]       => q{\\r},
+                    qq[\x{2028}] => q{\\u2028},
+                    qq[\x{2029}] => q{\\u2029},
+                    q[@]         => q{\\x40},
+                    q[<]         => q{\\x3c},
+                    q[>]         => q{\\x3e},
+                };
                 my ($var) = @_;
-                $var =~ s/([\\\'\"\/])/\\$1/g;
-                $var =~ s/\n/\\n/g;
-                $var =~ s/\r/\\r/g;
-                $var =~ s/\x{2028}/\\u2028/g; # unicode line separator
-                $var =~ s/\x{2029}/\\u2029/g; # unicode paragraph separator
-                $var =~ s/\@/\\x40/g; # anti-spam for email addresses
-                $var =~ s/</\\x3c/g;
-                $var =~ s/>/\\x3e/g;
+                $var =~ s/([\\'"\n\r\x{2028}\x{2029}\@<>])/$chars->{$1}/g;
                 return $var;
             },
 
