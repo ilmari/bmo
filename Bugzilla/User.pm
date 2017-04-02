@@ -946,7 +946,16 @@ sub settings {
     if ($self->id) {
         $self->{'settings'} = get_all_settings($self->id);
     } else {
-        $self->{'settings'} = get_defaults();
+        my $memcached = Bugzilla->memcached;
+        my $defaults = $memcached->get_config({key => "default_user_settings"});
+        if (!$defaults) {
+            $defaults = get_defaults();
+            $memcached->set_config({
+                key => "default_user_settings",
+                data => $defaults,
+            });
+        }
+        $self->{'settings'} = $defaults;
     }
 
     return $self->{'settings'};

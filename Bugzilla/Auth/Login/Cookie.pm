@@ -32,7 +32,6 @@ sub is_automatic { return $_[0]->login_token ? 0 : 1; }
 sub get_login_info {
     my ($self) = @_;
     my $cgi = Bugzilla->cgi;
-    my $dbh = Bugzilla->dbh;
     my ($user_id, $login_cookie, $is_internal);
 
     if (!Bugzilla->request_cache->{auth_no_automatic_login}) {
@@ -87,6 +86,7 @@ sub get_login_info {
     my $ip_addr = remote_ip();
 
     if ($login_cookie && $user_id) {
+        my $dbh = Bugzilla->dbh;
         # Anything goes for these params - they're just strings which
         # we're going to verify against the db
         trick_taint($ip_addr);

@@ -48,7 +48,6 @@ sub new {
 
 sub login {
     my ($self, $type) = @_;
-    my $dbh = Bugzilla->dbh;
 
     # Get login info from the cookie, form, environment variables, etc.
     my $login_info = $self->{_info_getter}->get_login_info();
@@ -192,7 +191,6 @@ sub can_change_email {
 
 sub _handle_login_result {
     my ($self, $result, $login_type) = @_;
-    my $dbh = Bugzilla->dbh;
 
     my $user      = $result->{user};
     my $fail_code = $result->{failure};

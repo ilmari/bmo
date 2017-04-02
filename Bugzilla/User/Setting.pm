@@ -41,8 +41,6 @@ sub new {
     # Create a ref to an empty hash and bless it
     my $self = {};
 
-    my $dbh = Bugzilla->dbh;
-
     # Confirm that the $setting_name is properly formed;
     # if not, throw a code error. 
     # 
@@ -56,6 +54,7 @@ sub new {
     # If there were only two parameters passed in, then we need
     # to retrieve the information for this setting ourselves.
     if (scalar @_ == 0) {
+        my $dbh = Bugzilla->dbh;
 
         my ($default, $is_enabled, $value, $category);
         ($default, $is_enabled, $value, $subclass, $category) =
