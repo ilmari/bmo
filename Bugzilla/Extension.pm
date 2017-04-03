@@ -13,12 +13,41 @@ use warnings;
 
 use Bugzilla::Constants;
 use Bugzilla::Error;
-use Bugzilla::Install::Util qw(
-    extension_code_files extension_template_directory 
-    extension_package_directory extension_web_directory);
+use Bugzilla::Install::Util qw( extension_code_files );
 
 use File::Basename;
 use File::Spec;
+
+my @EXTENSIONS;
+BEGIN { push @INC, \&INC_HOOK }
+
+sub INC_HOOK {
+    my (undef, $fake_file) = @_;
+    state $bz_locations = bz_locations();
+    my ($vol, $dir, $file) = File::Spec->splitpath($fake_file);
+    my @dirs = grep { length $_ } File::Spec->splitdir($dir);
+
+    if (@dirs > 2 && $dirs[0] eq 'Bugzilla' && $dirs[1] eq 'Extension') {
+        my $extension = $dirs[2];
+        splice @dirs, 0, 3, File::Spec->splitdir($bz_locations->{extensionsdir}), $extension, "lib";
+        my $real_file = Cwd::realpath(File::Spec->catpath($vol, File::Spec->catdir(@dirs), $file));
+
+        my $first = 1;
+        open(my $fh, '<', $real_file);
+        return (
+            $fh,
+            sub {
+                if ($first) {
+                    $_ = qq{# line 0 "$real_file"\n$_} if $first;
+                    $first = 0;
+                    return 1 if $_;
+                    return 0;
+                }
+            },
+        );
+    }
+    return;
+};
 
 ####################
 # Subclass Methods #
@@ -59,13 +88,10 @@ sub load {
             }
             $package = "${class}::$name";
         }
-
-        __do_call($package, 'modify_inc', $config_file);
     }
 
     if ($map and defined $map->{$extension_file}) {
         $package = $map->{$extension_file};
-        $package->modify_inc($extension_file) if !$config_file;
     }
     else {
         my $name = require $extension_file;
@@ -74,7 +100,6 @@ sub load {
                            { extension => $extension_file, returned => $name });
         }
         $package = "${class}::$name";
-        $package->modify_inc($extension_file) if !$config_file;
     }
 
     $class->_validate_package($package, $extension_file);
@@ -107,27 +132,15 @@ sub _validate_package {
 
 sub load_all {
     my $class = shift;
-    my ($file_sets, $extra_packages) = extension_code_files();
-    my @packages;
+    return \@EXTENSIONS if @EXTENSIONS;
+
+    my ($file_sets) = extension_code_files();
     foreach my $file_set (@$file_sets) {
         my $package = $class->load(@$file_set);
-        push(@packages, $package);
+        push(@EXTENSIONS, $package);
     }
 
-    # Extensions from data/extensions/additional
-    foreach my $package (@$extra_packages) {
-        # Don't load an "additional" extension if we already have an extension
-        # loaded with that name.
-        next if grep($_ eq $package, @packages);
-        # Untaint the package name
-        $package =~ /([\w:]+)/;
-        $package = $1;
-        eval("require $package") || die $@;
-        $package->_validate_package($package);
-        push(@packages, $package);
-    }
-
-    return \@packages;
+    return \@EXTENSIONS;
 }
 
 # Modifies @INC so that extensions can use modules like
@@ -201,29 +214,21 @@ sub lib_dir {
     return File::Spec->catdir($package_dir, 'lib');
 }
 
-sub template_dir { return extension_template_directory(@_); }
-sub package_dir  { return extension_package_directory(@_);  }
-sub web_dir      { return extension_web_directory(@_);      }
+sub package_dir  {
+    my ($class) = @_;
+    state $bz_locations = bz_locations();
+    my (undef, undef, $name) = split(/::/, $class);
+    return File::Spec->catdir($bz_locations->{extensionsdir}, $name);
+}
 
-######################
-# Helper Subroutines #
-######################
+sub template_dir {
+    my ($class) = @_;
+    return File::Spec->catdir($class->package_dir, "template");
+}
 
-# In order to not conflict with extensions' private subroutines, any helpers
-# here should start with a double underscore.
-
-# This is for methods that can optionally be overridden in Config.pm.
-# It falls back to the local implementation if $class cannot do
-# the method. This is necessary because Config.pm is not a subclass of
-# Bugzilla::Extension.
-sub __do_call {
-    my ($class, $method, @args) = @_;
-    if ($class->can($method)) {
-        return $class->$method(@args);
-    }
-    my $function_ref;
-    { no strict 'refs'; $function_ref = \&{$method}; }
-    return $function_ref->($class, @args);
+sub web_dir {
+    my ($class) = @_;
+    return File::Spec->catdir($class->package_dir, "web");
 }
 
 1;
