@@ -44,7 +44,7 @@ ThrowUserError("auth_delegation_invalid_description")
 
 my $callback_uri  = URI->new($callback);
 ThrowUserError('auth_delegation_illegal_protocol', { protocol => scalar $callback_uri->scheme })
-    unless $callback_uri->scheme eq 'https';
+    unless $callback_uri->scheme =~ /^http/;
 my $callback_base = $callback_uri->clone;
 $callback_base->query(undef);
 
