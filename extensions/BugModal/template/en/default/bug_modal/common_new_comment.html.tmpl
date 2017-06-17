@@ -9,10 +9,12 @@
 [%#
   # comment: comment object
   # bug: bug object
+  # comment_tab: str ('Add Comment')
   #%]
 
-<div id="add-comment">
+[% DEFAULT comment_tab = 'Add Comment' %]
 
+<div id="add-comment">
   [% IF bug && !bug.check_can_change_field('longdesc', 0, 1) %]
     <div id="new-comment-notice">
       You are not allowed to make an additional comment on this [% terms.bug %].
@@ -22,8 +24,7 @@
 
   [% IF bug && user.is_insider %]
     <div id="add-comment-private"
-      title="Make comment visible only to members of the '[% Param('insidergroup') FILTER html %]' group"
-    >
+      title="Make comment visible only to members of the '[% Param('insidergroup') FILTER html %]' group">
       <input type="checkbox" name="comment_is_private" id="add-comment-private-cb"
           value="1" comment_id="[% comment.count FILTER none %]">
       <label for="add-comment-private-cb">Private</label>
@@ -32,7 +33,7 @@
 
   <ul id="comment-tabs" role="tablist">
     <li id="comment-edit-tab" data-focus="comment" role="tab" tabindex="0" aria-controls="comment-edit-tabpanel" aria-selected="true">
-      Add Comment
+      [% comment_tab FILTER html %]
     </li>
     [%~ ~%]
     <li id="comment-preview-tab" role="tab" tabindex="-1" aria-controls="comment-preview-tabpanel" aria-selected="false">

@@ -141,7 +141,7 @@ javascript_urls = ['extensions/BugModal/web/new_bug.js']
 
 [%
     IF user.id;
-      INCLUDE bug_modal/common_new_comment.html.tmpl;
+      INCLUDE bug_modal/common_new_comment.html.tmpl comment_tab = "Description";
     ELSE;
       %]
         <div id="new-comment-notice">
