@@ -1,4 +1,5 @@
-$(document).ready(function() {
+$(document).ready(
+    function() {
         bugzilla_ajax(
                 {
                     url: 'rest/bug_modal/products'
@@ -44,5 +45,5 @@ $(document).ready(function() {
             $("#component option[value='Select Product']").remove();
             $('#comp_desc').text($('#component').find(":selected").attr('desc').split('_').join(' '));
         });
-        
-    });
+    }
+);
