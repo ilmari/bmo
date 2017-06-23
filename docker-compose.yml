@@ -1,0 +1,47 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+version: '2'
+services:
+  bmo.test:
+    build: .
+    environment:
+      - BMO_db_driver=mysql
+      - BMO_db_host=bmo.db
+      - BMO_db_name=bugs
+      - BMO_db_user=bugs
+      - BMO_db_pass=bugs
+      - BMO_site_wide_secret=bigsecret
+      - BMO_memcached_namespace=bugzilla
+      - BMO_memcached_servers=memcached
+      - BMO_apache_size_limit=700000
+    restart: on-failure
+    volumes:
+      - bmo-data:/app/data
+    depends_on:
+      - bmo.db
+
+  bmo.db:
+    image: mysql:5.6
+    volumes:
+      - bmo-mysql-db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=bugs
+      - MYSQL_USER=bugs
+      - MYSQL_PASSWORD=bugs
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+
+  tinyproxy:
+    build:
+      context: docker_files/tinyproxy
+      dockerfile: ./Dockerfile
+    ports:
+      - "1080:1080"
+
+  memcached:
+    image: memcached
+
+volumes:
+  bmo-mysql-db:
+  bmo-data:

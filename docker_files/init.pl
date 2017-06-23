@@ -32,8 +32,12 @@ foreach my $key (keys %ENV) {
     }
 }
 
+my $sleep_before_checksetup;
+GetOptions(\$sleep_before_checksetup => 'sleep-before-checksetup=i');
+
 write_localconfig(\%localconfig);
-system("perl", "checksetup.pl", "--no-templates", "--no-permissions", '--no-assets');
+sleep($sleep_before_checksetup) if defined $sleep_before_checksetup;
+system("perl", "checksetup.pl", "--no-templates", "--no-permissions", '--no-assets', '/app/docker_files/checksetup_answers.txt');
 
 my $cmd = shift @ARGV or die "usage: init.pl CMD";
 my $method = "run_$cmd";

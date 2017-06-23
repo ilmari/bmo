@@ -1,0 +1,7 @@
+$answer{'ADMIN_EMAIL'} = 'admin@mozilla.bugs';
+$answer{'ADMIN_LOGIN'} = 'admin';
+$answer{'ADMIN_OK'} = 'Y';
+$answer{'ADMIN_PASSWORD'} = 'password';
+$answer{'ADMIN_REALNAME'} = 'QA Admin';
+$answer{'NO_PAUSE'} = 1;
+$answer{'urlbase'} = 'http://bmo.test/';
