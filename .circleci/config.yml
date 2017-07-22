@@ -17,9 +17,69 @@ jobs:
           name: install git and ssh
           command: apk update && apk add git openssh-client
       - checkout
-      - run: |
-          docker build -t $BMO_IMAGE_NAME:$CIRCLE_BRANCH .
-          if [[ -n "$DOCKER_USER" && -n "$DOCKER_PASS" ]]; then
-            docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-            docker push $BMO_IMAGE_NAME:$CIRCLE_BRANCH
-          fi
+      - run:
+          name: build container
+          command: docker build -t $BMO_IMAGE_NAME:$CIRCLE_BRANCH .
+      - run:
+          name: run sanity tests
+          command: |
+            docker run \
+              --env-file=docker_files/tests.env \
+              $BMO_IMAGE_NAME:$CIRCLE_BRANCH prove t
+      - run:
+          name: create bmo network for tests
+          command: docker network create bmo_net
+      - run:
+          name: create /data volume for tests
+          command: docker volume create bmo_data
+      - run:
+          name: start mysql for tests
+          command: |
+            docker run --name bmo-mysql \
+                       --network bmo_net \
+                       --env-file=docker_files/tests.env \
+                       --rm -d \
+                       mozillabteam/bmo-mysql:5.6
+      - run:
+          name: start memcached for tests
+          command: docker run --name bmo-memcached --network bmo_net -d memcached
+
+      - run:
+          name: populate mysql and data volume for tests
+          command: |
+            docker run --network bmo_net \
+                       --env-file=docker_files/tests.env \
+                       -v bmo_data:/app/data \
+                       $BMO_IMAGE_NAME:$CIRCLE_BRANCH load_test_data
+      - run:
+          name: start httpd for testing web services
+          command: |
+            docker run --name bmo-web \
+                       --network bmo_net \
+                       --env-file=docker_files/tests.env \
+                       -v bmo_data:/app/data \
+                       -d \
+                       $BMO_IMAGE_NAME:$CIRCLE_BRANCH qa_httpd
+      - run:
+          name: check heartbeat
+          command: |
+            docker run --network bmo_net \
+                       --env-file=docker_files/tests.env \
+                       -v bmo_data:/app/data \
+                       $BMO_IMAGE_NAME:$CIRCLE_BRANCH test_heartbeat
+      - run:
+          name: test webservices
+          command: |
+            docker run --network bmo_net \
+                       --env-file=docker_files/tests.env \
+                       -v bmo_data:/app/data \
+                       $BMO_IMAGE_NAME:$CIRCLE_BRANCH test_webservices
+      - run:
+          name: upload to dockerhub (if possible)
+          command: |
+            if [[ -n "$DOCKER_USER" && -n "$DOCKER_PASS" ]]; then
+              docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+              docker push $BMO_IMAGE_NAME:$CIRCLE_BRANCH
+            else
+              echo "No DOCKER_USER/DOCKER_PASS, skipping docker push"
+            fi
