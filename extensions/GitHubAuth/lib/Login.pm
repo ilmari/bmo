@@ -91,9 +91,6 @@ sub _get_login_info_from_github {
         $emails       = $client->get_user_emails($access_token);
         $info         = $client->get_user_info($access_token);
     };
-    open my $fh, '>/vagrant/data/userinfo.json';
-    print $fh JSON::XS->new->pretty->canonical->encode($info);
-    close $fh;
 
     my $e = $@;
     if (blessed $e && $e->isa('Bugzilla::Extension::GitHubAuth::Client::Error')) {
