@@ -11,7 +11,7 @@ use 5.10.1;
 use strict;
 use warnings;
 
-use JSON qw(decode_json);
+use JSON::XS qw(decode_json);
 use URI;
 use URI::QueryParam;
 use Digest;
@@ -26,6 +26,7 @@ use fields qw(user_agent);
 use constant {
     GH_ACCESS_TOKEN_URI => 'https://github.com/login/oauth/access_token',
     GH_AUTHORIZE_URI    => 'https://github.com/login/oauth/authorize',
+    GH_USER_URI         => 'https://api.github.com/user',
     GH_USER_EMAILS_URI  => 'https://api.github.com/user/emails',
 };
 
@@ -50,7 +51,7 @@ sub authorize_uri {
     my $uri = URI->new(GH_AUTHORIZE_URI);
     $uri->query_form(
         client_id    => Bugzilla->params->{github_client_id},
-        scope        => 'user:email',
+        scope        => 'user',
         state        => $state,
         redirect_uri => correct_urlbase() . "github.cgi",
     );
@@ -102,6 +103,16 @@ sub get_access_token {
 sub get_user_emails {
     my ($self, $access_token) = @_;
     my $uri = URI->new(GH_USER_EMAILS_URI);
+    $uri->query_form(access_token => $access_token);
+
+    my $response = $self->user_agent->get($uri, Accept => 'application/json');
+
+    return $self->_handle_response($response);
+}
+
+sub get_user_info {
+    my ($self, $access_token) = @_;
+    my $uri = URI->new(GH_USER_URI);
     $uri->query_form(access_token => $access_token);
 
     my $response = $self->user_agent->get($uri, Accept => 'application/json');

@@ -82,14 +82,19 @@ sub _get_login_info_from_github {
 
     my $client = Bugzilla::Extension::GitHubAuth::Client->new;
 
-    my ($access_token, $emails);
+    my ($access_token, $emails, $info);
     eval {
         # The following variable lets us catch and return (rather than throw) errors
         # from our github client code, as required by the Auth API.
         local $Bugzilla::Extension::GitHubAuth::Client::Error::USE_EXCEPTION_OBJECTS = 1;
         $access_token = $client->get_access_token($code);
         $emails       = $client->get_user_emails($access_token);
+        $info         = $client->get_user_info($access_token);
     };
+    open my $fh, '>/vagrant/data/userinfo.json';
+    print $fh JSON::XS->new->pretty->canonical->encode($info);
+    close $fh;
+
     my $e = $@;
     if (blessed $e && $e->isa('Bugzilla::Extension::GitHubAuth::Client::Error')) {
         my $key = $e->type eq 'user' ? 'user_error' : 'error';
