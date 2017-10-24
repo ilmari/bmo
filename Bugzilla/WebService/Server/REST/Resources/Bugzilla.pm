@@ -49,7 +49,12 @@ sub _rest_resources {
             GET => {
                 method => 'parameters'
             }
-        }
+        },
+        qr{/new_password$}, {
+            POST => {
+                method => 'new_password',
+            },
+        },
     ];
     return $rest_resources;
 }
