@@ -35,6 +35,7 @@ use constant PUBLIC_METHODS => qw(
     time
     timezone
     version
+    new_password
 );
 
 sub version {
@@ -78,6 +79,11 @@ sub time {
         tz_offset     => $self->type('string', '+0000'),
         tz_short_name => $self->type('string', 'UTC'),
     };
+}
+
+sub new_password {
+    my ($self) = @_;
+    return { password => Bugzilla->passwdqc->generate_password() };
 }
 
 1;
