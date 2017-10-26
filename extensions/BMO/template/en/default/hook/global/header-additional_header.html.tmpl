@@ -52,3 +52,25 @@
     [% END %]
   [% END %]
 [% END %]
+
+[%# BMO - Google Analytics %]
+[% IF !user.in_group(Param('insidergroup')) %]
+  <meta name="google-analytics" content="UA-36116321-3" data-location="
+    [%~ urlbase FILTER html %][% template.name.replace('\.html\.tmpl$', '') FILTER html ~%]
+    " data-title="
+    [%~ IF bug.defined && bug.groups_in.size ~%]
+      [% bug.id FILTER none %] – (private bug)
+    [%~ ELSIF template.name == 'pages/user_activity.html.tmpl' ~%]
+      User Activity Report
+    [%~ ELSIF template.name == 'pages/user_profile.html.tmpl' ~%]
+      User Profile
+    [%~ ELSE ~%]
+      [% title FILTER html %]
+    [%~ END ~%]
+    ">
+  <script async src="https://www.google-analytics.com/analytics
+    [%~ IF urlbase != 'https://bugzilla.mozilla.org/' ~%]
+      _debug
+    [%~ END ~%]
+    .js"></script>
+[% END %]
