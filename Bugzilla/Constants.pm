@@ -196,6 +196,8 @@ use Memoize;
     EMAIL_LIMIT_EXCEPTION
 
     JOB_QUEUE_VIEW_MAX_JOBS
+
+    GA_TRACKING_ID
 );
 
 @Bugzilla::Constants::EXPORT_OK = qw(contenttypes);
@@ -210,6 +212,8 @@ sub BUGZILLA_VERSION {
     eval { require Bugzilla } || return $bugzilla_version;
     eval { Bugzilla->VERSION } || $bugzilla_version;
 }
+
+use constant GA_TRACKING_ID => 'UA-36116321-3';
 
 # A base link to the current REST Documentation. We place it here
 # as it will need to be updated to whatever the current release is.
