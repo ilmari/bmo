@@ -122,7 +122,7 @@ sub _get_create_table_ddl {
 
     my $charset = 'CHARACTER SET utf8mb4';
     my $type    = 'InnoDB';
-    my $fmt     = Bugzilla->dbh->ROW_FORMAT;
+    my $fmt     = Bugzilla->dbh->DEFAULT_ROW_FORMAT;
     return($self->SUPER::_get_create_table_ddl($table)
            . " ENGINE = $type ROW_FORMAT = $fmt $charset");
 
