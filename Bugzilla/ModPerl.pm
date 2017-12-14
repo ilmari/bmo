@@ -97,6 +97,12 @@ ErrorDocument 500 /errors/500.html
     [% root_htaccess.contents FILTER indent %]
 </Directory>
 
+<Location /hello>
+	SetHandler perl-script
+	PerlResponseHandler Plack::Handler::Apache2
+	PerlSetVar psgi_app [% cgi_path %]/hello.psgi
+</Location>
+
 # directory rules for all the other places we have .htaccess files
 [% FOREACH htaccess IN htaccess_files %]
 # from [% htaccess.file %]
