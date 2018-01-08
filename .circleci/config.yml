@@ -145,7 +145,7 @@ jobs:
       - store_artifacts:
           path: /app/logs
 
-  test_mysql_4_2:
+  migrate_4.2_mysql:
     parallelism: 1
     working_directory: /app
     docker:
@@ -199,6 +199,8 @@ workflows:
     jobs:
       - test_sanity:
           filters: *main_filters
+      - migrate_4.2_mysql:
+          filters: *main_filters
       - test_bmo:
           filters: *main_filters
           requires:
@@ -211,6 +213,7 @@ workflows:
           filters: *main_filters
           requires:
             - test_sanity
+            - migrate_4.2_mysql
       - build:
           filters: *main_filters
           requires:
