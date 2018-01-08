@@ -16,7 +16,7 @@ main_filters: &main_filters
 
 defaults:
   bmo_slim_image: &bmo_slim_image
-    image: mozillabteam/bmo-slim:20171228.1
+    image: mozillabteam/bmo-slim:20180107.1
     user: app
 
   mysql_image: &mysql_image
@@ -144,6 +144,28 @@ jobs:
           path: /app/artifacts
       - store_artifacts:
           path: /app/logs
+
+  test_mysql_4_2:
+    parallelism: 1
+    working_directory: /app
+    docker:
+      - <<: *bmo_slim_image
+        environment:
+          <<: *bmo_env
+          BMO_urlbase: http://localhost/
+          DB_DUMP_URL: "https://github.com/bugzilla/harmony-test-fixtures/blob/master/db-dumps/bugzilla-4.2_mysql.sql.gz?raw=true"
+          DB_DUMP_FILE: "bugzilla-4.2_mysql.sql"
+      - <<: *mysql_image
+        environment: *mysql_env
+    steps:
+      - checkout
+      - run: |
+          mv /opt/bmo/local /app/local
+          /app/scripts/entrypoint.pl wait_for_db
+          curl -L "$DB_DUMP_URL" > "$DB_DUMP_FILE"
+          zcat "$DB_DUMP_FILE" | mysql -u$BMO_db_user -p$BMO_db_pass -h $BMO_db_host $BMO_db_name
+          perl checksetup.pl
+
 
   test_bmo:
     parallelism: 1

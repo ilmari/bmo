@@ -292,6 +292,10 @@ sub copy_qa_extension {
     dircopy('/app/qa/extensions/QA', '/app/extensions/QA');
 }
 
+sub cmd_wait_for_db {
+    wait_for_db();
+}
+
 sub wait_for_db {
     my $c = Bugzilla::Install::Localconfig::read_localconfig();
     for my $var (qw(db_name db_host db_user db_pass)) {
